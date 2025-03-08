@@ -1,0 +1,75 @@
+# Importing Required Modules and Libraries
+from tkinter import *
+from tkinter import ttk, messagebox
+from googletrans import Translator
+import googletrans
+
+# Initialize the language dictionary from googletrans
+language = googletrans.LANGUAGES
+lang_value = list(language.values())  # List of languages
+
+# Creating a window for the application
+window = Tk()
+window.title("DataFlair Language Translation")
+window.minsize(600, 500)
+window.maxsize(600, 500)
+
+# Adding frame, button, text area, and language drop-down to the window
+combo1 = ttk.Combobox(window, values=lang_value, state='readonly')
+combo1.place(x=100, y=20)
+combo1.set("Choose a language")  # Default text for the first combo box
+
+f1 = Frame(window, bg='black', bd=4)
+f1.place(x=100, y=100, width=150, height=150)
+text1 = Text(f1, font="Roboto 14", bg='white', relief=GROOVE, wrap=WORD)
+text1.place(x=0, y=0, width=140, height=140)
+
+combo2 = ttk.Combobox(window, values=lang_value, state='readonly')
+combo2.place(x=300, y=20)
+combo2.set("Choose a language")  # Default text for the second combo box
+
+f2 = Frame(window, bg='black', bd=4)
+f2.place(x=300, y=100, width=150, height=150)
+text2 = Text(f2, font="Roboto 14", bg='white', relief=GROOVE, wrap=WORD)
+text2.place(x=0, y=0, width=140, height=140)
+
+button = Button(window, text='Translate', font=('normal', 15), bg='yellow', command=lambda: translate())
+button.place(x=230, y=300)
+
+# Translate function to perform the actual translation
+def translate():
+    try:
+        # Get input text and selected languages
+        txt = text1.get(1.0, END).strip()
+        source_language = combo1.get().lower()
+        target_language = combo2.get().lower()
+
+        if txt:
+            translator = Translator()
+
+            # Find the source and target language codes
+            src_lang_code, tgt_lang_code = None, None
+            for code, lang in language.items():
+                if lang.lower() == source_language:
+                    src_lang_code = code
+                if lang.lower() == target_language:
+                    tgt_lang_code = code
+
+            # If languages are selected correctly, translate the text
+            if src_lang_code and tgt_lang_code:
+                translated = translator.translate(txt, src=src_lang_code, dest=tgt_lang_code)
+
+                # Display the translated text
+                text2.delete(1.0, END)
+                text2.insert(END, translated.text)
+            else:
+                messagebox.showerror("Error", "Please select valid languages.")
+        else:
+            messagebox.showerror("Error", "Input text is empty!")
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred: {str(e)}")
+
+# Main loop to run the application
+window.configure(bg="lightblue")
+window.mainloop()
+
